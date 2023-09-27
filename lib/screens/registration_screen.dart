@@ -128,7 +128,7 @@ class _RegistrationState extends State<Registration> {
           }
            }
            catch(e){
-            print(e);
+           
            }
             } 
           else{

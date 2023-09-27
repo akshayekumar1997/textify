@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:textify/constants/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:textify/screens/contacts_screen.dart';
 /// A firebase variable to check wheather the user is logged in 
  User ?  loggedInuser;
 final fireStore=FirebaseFirestore.instance;
@@ -43,12 +45,19 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return
      Scaffold(
+        floatingActionButton: FloatingActionButton(onPressed: () =>()async {
+await requestPhotosPermission();
+
+      
+      } ,
+      child: Icon(Icons.comment),
+      ),
       appBar: AppBar(
         centerTitle: true,
         title: const Text("⚡️Chat"),
         backgroundColor: Colors.lightBlueAccent,
         leading: IconButton(onPressed: () {
-        //  getMessagesStream();
+        
         }, icon: const Icon(Icons.arrow_back_ios_new)),
         actions: [IconButton(onPressed: () {
           _auth.signOut();
@@ -59,7 +68,7 @@ class _ChatScreenState extends State<ChatScreen> {
            mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            MessageStream(),
+            const MessageStream(),
             
 Container(
 decoration: MessageContainerDecoration,
@@ -76,7 +85,7 @@ TextButton(onPressed: () {
   fireStore.collection("messages").add({"text":_messageEditingController.text,
   "sender":loggedInuser!.email});
   _messageEditingController.clear();
-}, child: Text("Send",
+}, child: const Text("Send",
 style: sendButtonStyle,),
  )
           ],
@@ -96,6 +105,17 @@ for(var message in snapShot.docs){
 }
             }
           }
+          Future<void> requestPhotosPermission() async {
+    var status = await Permission.photos.request();
+    if (status.isGranted) {
+     Navigator.of(context).push(MaterialPageRoute(builder: (context) => ContactList(),));
+    } else if (status.isDenied) {
+      // Permission denied.
+    } else if (status.isPermanentlyDenied) {
+      // Permission permanently denied. Open app settings to enable.
+      openAppSettings();
+    }
+    }
 }
 class MessageBubble extends StatelessWidget {
    MessageBubble({super.key,required this.sender,required this.text,required this.isMe});
@@ -113,13 +133,13 @@ final bool isMe;
           Column(
         crossAxisAlignment: isMe? CrossAxisAlignment.end:CrossAxisAlignment.start,
             children: [
-              Text(sender,style: TextStyle(fontSize: 12,color:Colors.black54 ),),
+              Text(sender,style: const TextStyle(fontSize: 12,color:Colors.black54 ),),
               Container(
                   
               decoration: BoxDecoration(
                 color:
                 isMe? Colors.lightBlueAccent:const Color.fromARGB(255, 209, 203, 203),
-                borderRadius: isMe? BorderRadius.only(topLeft: Radius.circular(30),bottomRight: Radius.circular(30),topRight: Radius.circular(30)):BorderRadius.only(topLeft: Radius.circular(30),bottomRight: Radius.circular(30),bottomLeft: Radius.circular(30))
+                borderRadius: isMe? const BorderRadius.only(topLeft: Radius.circular(30),bottomRight: Radius.circular(30),topRight: Radius.circular(30)):const BorderRadius.only(topLeft: Radius.circular(30),bottomRight: Radius.circular(30),bottomLeft: Radius.circular(30))
               ),
               child:
                Padding(
@@ -142,13 +162,13 @@ class MessageStream extends StatelessWidget {
     return StreamBuilder<QuerySnapshot>(stream:fireStore.collection("messages").snapshots() , builder:(context,snapshot){
            List<MessageBubble>messageBubbles=[];
            if(!snapshot.hasData){
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(
                 backgroundColor: Colors.lightBlueAccent,
               ),
             );
            }
-              if(snapshot.hasData){
+             
                 final messages=snapshot.data!.docs.reversed;
                 
                 for(var message in messages){
@@ -165,16 +185,13 @@ final messageBubble=MessageBubble(sender: messageSender, text: messageText,isMe:
 
 );
 messageBubbles.add(messageBubble);
-                }
-       
-              }
-
+                } 
                      return 
                      Expanded(
                        child: ListView(
                         reverse: true,
-                        padding: EdgeInsets.symmetric(horizontal: 15,vertical: 25),
-                       children: messageBubbles,
+                        padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 25),
+                       children: messageBubbles.reversed.toList(),
                        
                        
                      ),
