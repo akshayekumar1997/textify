@@ -5,7 +5,7 @@ import 'package:textify/controller/contacts_controller.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 class ContactList extends ConsumerWidget {
   const ContactList({super.key});
-static final routName="contactsScreen";
+ static const String routeName = '/select-contact';
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(

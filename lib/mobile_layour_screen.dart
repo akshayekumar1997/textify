@@ -4,15 +4,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:textify/features/authentication/controller/auth_controller.dart';
 import 'package:textify/screens/contacts_screen.dart';
 import 'package:textify/utils/utils.dart';
-class ChatScreen extends ConsumerStatefulWidget {
-   static const routeName="ChatScreen";
-  const ChatScreen({Key? key}) : super(key: key);
+
+class MobileLayoutScreen extends ConsumerStatefulWidget {
+  const MobileLayoutScreen({Key? key}) : super(key: key);
+
   @override
-  ConsumerState<ChatScreen> createState() => _ChatScreenState();
+  ConsumerState<MobileLayoutScreen> createState() => _MobileLayoutScreenState();
 }
-class _ChatScreenState extends ConsumerState<ChatScreen>
+
+class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
     with WidgetsBindingObserver, TickerProviderStateMixin {
-     
   late TabController tabBarController;
   @override
   void initState() {
@@ -20,15 +21,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     tabBarController = TabController(length: 3, vsync: this);
     WidgetsBinding.instance.addObserver(this);
   }
+
   @override
   void dispose() {
     super.dispose();
     WidgetsBinding.instance.removeObserver(this);
   }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    switch(state) {
+    switch (state) {
       case AppLifecycleState.resumed:
         ref.read(authControllerProvider).setUserState(true);
         break;
@@ -40,6 +43,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
         default:AppLifecycleState.hidden;
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -47,7 +51,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       child: Scaffold(
         appBar: AppBar(
           elevation: 0,
-          backgroundColor: Colors.lightBlueAccent,
+          backgroundColor: Colors.black,
           centerTitle: false,
           title: const Text(
             'WhatsApp',
@@ -72,10 +76,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                   child: const Text(
                     'Create Group',
                   ),
-                  // onTap: () => Future(
-                  //   () => Navigator.pushNamed(
-                  //       context, CreateGroupScreen.routeName),
-                  // ),
+                  
                 )
               ],
             ),
@@ -106,22 +107,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
           controller: tabBarController,
           children: const [
             ContactList(),
-            // StatusContactsScreen(),
+            Text("Status"),
             Text('Calls')
           ],
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
             if (tabBarController.index == 0) {
-              // Navigator.pushNamed(context, SelectContactScreen.routeName);
+              Navigator.pushNamed(context, ContactList.routeName);
             } else {
               File? pickedImage = await pickImageFromGallery(context);
               if (pickedImage != null) {
-                // Navigator.pushNamed(
-                //   context,
-                //   ConfirmStatusScreen.routeName,
-                //   arguments: pickedImage,
-                // );
+                
               }
             }
           },

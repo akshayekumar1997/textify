@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:textify/features/authentication/repositary/auth_repository.dart';
 import 'package:textify/screens/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 class Registration extends StatefulWidget {
@@ -132,10 +133,13 @@ class _RegistrationState extends State<Registration> {
            }
             } 
           else{
-            
+            try{
+
+            }
+            catch(e){
+              print(e.toString());
+            }
           }
-         
-           
                 }
             }, child: Text("Register")),
             ],

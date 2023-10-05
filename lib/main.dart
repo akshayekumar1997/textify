@@ -1,35 +1,53 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:textify/screens/chat_screen.dart';
-import 'package:textify/screens/contacts_screen.dart';
-import 'package:textify/screens/login_screen.dart';
-import 'package:textify/screens/registration_screen.dart';
-import 'package:textify/screens/welcome_screen.dart';
-void main()async{
+import 'package:textify/common/widgets/error_screen.dart';
+import 'package:textify/common/widgets/loader.dart';
+import 'package:textify/features/authentication/controller/auth_controller.dart';
+import 'package:textify/mobile_layour_screen.dart';
+import 'package:textify/router.dart';
+import 'package:textify/screens/landing_screen.dart';
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(ProviderScope(child: Textify()));
+  
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
-class Textify extends StatelessWidget {
-  const Textify({super.key});
+class MyApp extends ConsumerWidget {
+  const MyApp({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: ContactList.routName,
-routes: {
-  WelcomeScreen.routeName:(context) => WelcomeScreen(),
-  Registration.routeName:(context) => Registration(),
-  LoginScreen.routeName:(context) => LoginScreen(),
-  ChatScreen.routeName:(context) => ChatScreen(),
-ContactList.routName:(context) => ContactList()
-
-
-},
-      
+      title: 'Whatsapp UI',
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: Colors.black,
+        appBarTheme: const AppBarTheme(
+          color: Colors.lightBlueAccent,
+        ),
+      ),
+      onGenerateRoute: (settings) => generateRoute(settings),
+      home: ref.watch(userDataAuthProvider).when(
+            data: (user) {
+              if (user == null) {
+                return const LandingScreen();
+              }
+              return const MobileLayoutScreen();
+            },
+            error: (err, trace) {
+              return ErrorScreen(
+                error: err.toString(),
+              );
+            },
+            loading: () => const Loader(),
+          ),
     );
   }
 }
